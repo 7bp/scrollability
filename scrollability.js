@@ -1,21 +1,3 @@
-/* See LICENSE for terms of usage */
-
-"style scrollability/scrollbar.css"
-
-// var logs = [];
-
-// function D() {
-//     var args = []; args.push.apply(args, arguments);
-//     console.log(args.join(' '));
-//     // logs.push(args.join(' '));
-// }
-
-// window.showLog = function() {
-//     document.querySelector('.scrollable').innerHTML = logs.join('<br>');
-//     document.querySelector('.scrollable').style.webkitAnimation = '';
-//     document.querySelector('.scrollable').style.webkitTransform = 'translate3d(0,0,0)';
-// }
-
 // *************************************************************************************************
 
 var isWebkit = "webkitTransform" in document.documentElement.style;
@@ -74,27 +56,14 @@ var directions = {
     'vertical': createYDirection
 };
 
-exports.directions = directions;
-
-exports.flashIndicators = function() {
-    // var scrollables = document.querySelectorAll('.scrollable.vertical');
-    // for (var i = 0; i < scrollables.length; ++i) {
-    //     exports.scrollTo(scrollables[i], 0, 0, 20, true);
-    // }            
-}
+document.addEventListener(isTouch ? 'touchstart' : 'mousedown', onTouchStart, false);
+window.addEventListener('load', onLoad, false);
 
 function onLoad() {
     var ss = document.createElement("style");
     document.head.appendChild(ss);
     globalStyleSheet = document.styleSheets[document.styleSheets.length-1];
-
-    // exports.flashIndicators();
 }
-
-require.ready(function() {
-    document.addEventListener(isTouch ? 'touchstart' : 'mousedown', onTouchStart, false);
-    window.addEventListener('load', onLoad, false);
-});
 
 function onTouchStart(event) {
     var touch = isTouch ? event.touches[0] : event;
@@ -787,4 +756,15 @@ function dispatch(name, target, props) {
     }
 
     return target.dispatchEvent(e);
+}
+
+function scrollToPage(node, page, timing) {
+    var position = $('body').width() * page;
+    node.style.webkitTransition = 'all '+timing+'ms ease-in-out';
+    node.style.webkitTransform = 'translate3d(' + Math.round(position) + 'px, 0, 0)';
+    $(node).one('webkitTransitionEnd', function() {
+        node.style.webkitTransition = '';
+        //var pageNum = Math.round($(node).offset().left * -1 / $('body').width());
+    });
+    play(node);
 }
